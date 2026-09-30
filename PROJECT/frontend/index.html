@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriSahayak | Farmer Self-Service</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">🌱</div>
+    <h1>AgriSahayak</h1>
+    <p class="muted">Farmer Self-Service</p>
+    <div class="auth-tabs"><button id="loginTab" class="auth-tab active">Login</button><button id="registerTab" class="auth-tab">Register</button></div>
+    <form id="loginForm">
+      <label>Phone number<input id="loginPhone" required placeholder="Enter phone number"></label>
+      <label>Password<input id="loginPassword" type="password" required placeholder="Enter password"></label>
+      <button class="primary full" type="submit">Login</button>
+      <p id="loginMsg" class="auth-msg"></p>
+      <button type="button" class="offline-link" id="offlineMode">Continue offline</button>
+    </form>
+    <form id="registerForm" class="hidden">
+      <label>Farmer name<input id="regName" required placeholder="Your name"></label>
+      <label>Phone number<input id="regPhone" required placeholder="Enter phone number"></label>
+      <label>Password<input id="regPassword" type="password" minlength="4" required placeholder="At least 4 characters"></label>
+      <button class="primary full" type="submit">Create Account</button>
+      <p id="regMsg" class="auth-msg"></p>
+    </form>
+    <small class="offline-note">If there is no internet, your crop entries are stored on this device and automatically synced when the connection returns.</small>
+  </div>
+</div>
+<header class="topbar">
+  <div class="brand"><span class="brand-icon">🌱</span><div><b>AgriSahayak</b><small>Farmer Self-Service</small></div></div><div id="connectionBadge" class="connection online">● Online</div><div id="farmerName" class="farmer-name"></div><button id="logoutBtn" class="logout">Logout</button>
+  <nav>
+    <button class="nav active" data-page="home" data-i18n="home">Home</button>
+    <button class="nav" data-page="crop" data-i18n="crop">Crop Recommendation</button>
+    <button class="nav" data-page="weather" data-i18n="weather">Weather</button>
+    <button class="nav" data-page="tools" data-i18n="tools">Farmer Tools</button>
+  </nav>
+  <select id="language" aria-label="Language">
+    <option value="en">English</option><option value="hi">हिन्दी</option>
+    <option value="te">తెలుగు</option><option value="ta">தமிழ்</option>
+  </select>
+</header>
+
+<main>
+<section id="home" class="page active-page">
+  <div class="hero">
+    <div><span class="pill" data-i18n="smart">SMART FARMING ASSISTANT</span>
+    <h1 data-i18n="heroTitle">Better decisions. Better crops. Better farming.</h1>
+    <p data-i18n="heroText">AgriSahayak brings crop recommendations, live weather and practical farmer tools into one simple dashboard.</p>
+    <button class="primary" onclick="showPage('crop')" data-i18n="start">Get Crop Recommendation →</button></div>
+    <div class="hero-art">🌾<div class="sun">☀️</div></div>
+  </div>
+  <div class="cards">
+    <div class="stat"><span>🌱</span><b data-i18n="cropCard">Crop Recommendation</b><p data-i18n="cropDesc">Use soil and climate inputs to find suitable crops.</p></div>
+    <div class="stat"><span>🌦️</span><b data-i18n="weatherCard">Live Weather</b><p data-i18n="weatherDesc">Search any city and get current conditions and a 7-day forecast.</p></div>
+    <div class="stat"><span>🧰</span><b data-i18n="toolsCard">Farmer Tools</b><p data-i18n="toolsDesc">Quick calculators and practical farming guidance.</p></div>
+  </div>
+  <div class="notice"><b>💡 <span data-i18n="tip">Today's farming tip</span></b><span id="dailyTip"></span></div>
+</section>
+
+<section id="crop" class="page">
+  <div class="section-head"><div><span class="pill">AI-ASSISTED</span><h2 data-i18n="cropTitle">Crop Recommendation</h2><p data-i18n="cropSub">Enter your field conditions and get a ranked recommendation.</p></div></div>
+  <div class="grid2">
+    <form id="cropForm" class="panel">
+      <h3 data-i18n="fieldInputs">Field Inputs</h3>
+      <label>Soil type<select name="soil"><option value="loamy">Loamy</option><option value="black">Black</option><option value="alluvial">Alluvial</option><option value="sandy">Sandy</option><option value="clayey">Clayey</option></select></label>
+      <div class="row"><label>Nitrogen (N)<input name="nitrogen" type="number" value="80" min="0"></label><label>Phosphorus (P)<input name="phosphorus" type="number" value="45" min="0"></label></div>
+      <div class="row"><label>Potassium (K)<input name="potassium" type="number" value="55" min="0"></label><label>Temperature °C<input name="temperature" type="number" value="27" step="0.1"></label></div>
+      <label>Expected rainfall (mm)<input name="rainfall" type="number" value="120" min="0"></label>
+      <button class="primary full" type="submit" data-i18n="recommend">Recommend Crops</button>
+    </form>
+    <div class="panel result-panel"><h3 data-i18n="result">Recommendation</h3><div id="cropResult"><div class="empty">Enter your field values and click “Recommend Crops”.</div></div>
+      <div class="save-row"><button id="saveCrop" class="secondary" type="button">💾 Save this crop data</button><span id="saveStatus"></span></div>
+    </div>
+  </div>
+  <div class="panel history-panel"><div class="history-head"><h3>📚 My Saved Crop Data</h3><button class="secondary" id="refreshHistory">Refresh</button></div><div id="cropHistory"><div class="empty">Login to view your saved crop records.</div></div></div>
+</section>
+
+<section id="weather" class="page">
+  <div class="section-head"><div><span class="pill">REAL-TIME</span><h2 data-i18n="weatherTitle">Weather Dashboard</h2><p data-i18n="weatherSub">Search a city or use your current location.</p></div></div>
+  <div class="weather-search"><input id="city" placeholder="Enter city e.g. Hyderabad"><button class="primary" id="searchWeather">Search</button><button class="secondary" id="useLocation">📍 Use my location</button></div>
+  <div id="weatherStatus"></div><div id="weatherResult"></div>
+</section>
+
+<section id="tools" class="page">
+  <div class="section-head"><h2 data-i18n="toolsTitle">Farmer Tools</h2><p data-i18n="toolsSub">Simple utilities for everyday farm decisions.</p></div>
+  <div class="tools-grid">
+    <div class="panel"><h3>💧 Irrigation Estimator</h3><label>Area (acres)<input id="area" type="number" value="1" min="0.1" step="0.1"></label><label>Water depth (mm)<input id="depth" type="number" value="25" min="1"></label><button class="primary full" onclick="calcWater()">Calculate</button><div id="waterOut" class="tool-out"></div></div>
+    <div class="panel"><h3>🧪 Fertilizer Split</h3><label>Total fertilizer (kg)<input id="fert" type="number" value="100" min="1"></label><label>Number of applications<input id="apps" type="number" value="3" min="1"></label><button class="primary full" onclick="calcFert()">Calculate</button><div id="fertOut" class="tool-out"></div></div>
+    <div class="panel"><h3>📋 Quick Checklist</h3><div class="checks">
+      <label><input type="checkbox"> Check soil moisture</label><label><input type="checkbox"> Inspect leaves for pests</label><label><input type="checkbox"> Check irrigation lines</label><label><input type="checkbox"> Review weather forecast</label><label><input type="checkbox"> Record today's field observation</label>
+    </div><div id="checkOut" class="tool-out">0 / 5 completed</div></div>
+  </div>
+</section>
+</main>
+
+<footer>🌱 AgriSahayak • Agriculture & AgriTech Mobile App for Farmer Self-Service</footer>
+<script src="app.js"></script>
+</body></html>
